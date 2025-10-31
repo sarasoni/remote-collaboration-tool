@@ -46,13 +46,12 @@ DbConnection()
     startMeetingCleanupScheduler();
 
     server.listen(PORT, "0.0.0.0", () => {
-      if (NODE_ENV === "production") {
-        const productionUrl =
-          process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
-        console.log(`Server running in production at: ${productionUrl}`);
-      } else {
-        console.log(`Server running at: http://localhost:${PORT}`);
-      }
+        const baseUrl =
+    NODE_ENV === "production"
+      ? process.env.RENDER_EXTERNAL_URL ||
+        `https://remote-collaboration-tool-backend.onrender.com`
+      : `http://localhost:${PORT}`;
+  console.log(`🚀 Server is live at: ${baseUrl}`);
     });
 
     gracefulShutdown(server);
