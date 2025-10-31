@@ -46,17 +46,6 @@ DbConnection()
     startMeetingCleanupScheduler();
 
     server.listen(PORT, "0.0.0.0", () => {
-        const baseUrl =
-    NODE_ENV === "production"
-      ? process.env.RENDER_EXTERNAL_URL ||
-        `https://remote-collaboration-tool-backend.onrender.com`
-      : `http://localhost:${PORT}`;
-  console.log(`🚀 Server is live at: ${baseUrl}`);
-    });
-
-    gracefulShutdown(server);
-
-   server.listen(PORT, "0.0.0.0", () => {
   let baseUrl;
 
   if (process.env.RENDER_EXTERNAL_URL) {
@@ -73,6 +62,25 @@ DbConnection()
   console.log(`🚀 Server is live at: ${baseUrl}`);
 });
 
+
+    gracefulShutdown(server);
+
+    server.on("error", (error) => {
+      if (error.syscall !== "listen") throw error;
+
+      const bind = typeof PORT === "string" ? `Pipe ${PORT}` : `Port ${PORT}`;
+
+      switch (error.code) {
+        case "EACCES":
+          console.error(`${bind} requires elevated privileges`);
+          process.exit(1);
+        case "EADDRINUSE":
+          console.error(`${bind} is already in use`);
+          process.exit(1);
+        default:
+          throw error;
+      }
+    });
   })
   .catch((err) => {
     console.error("🚨 Failed to connect to MongoDB:", err.message);
