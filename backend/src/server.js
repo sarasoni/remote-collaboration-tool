@@ -11,7 +11,7 @@ dotenv.config();
 validateEnvironment();
 setDefaults();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV;
 
 const gracefulShutdown = (server) => {
