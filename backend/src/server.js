@@ -56,22 +56,23 @@ DbConnection()
 
     gracefulShutdown(server);
 
-    server.on("error", (error) => {
-      if (error.syscall !== "listen") throw error;
+   server.listen(PORT, "0.0.0.0", () => {
+  let baseUrl;
 
-      const bind = typeof PORT === "string" ? `Pipe ${PORT}` : `Port ${PORT}`;
+  if (process.env.RENDER_EXTERNAL_URL) {
+    // Render sets this automatically — use it
+    baseUrl = process.env.RENDER_EXTERNAL_URL;
+  } else if (NODE_ENV === "production") {
+    // Fallback for production mode
+    baseUrl = "https://remote-collaboration-tool-backend.onrender.com";
+  } else {
+    // Local dev
+    baseUrl = `http://localhost:${PORT}`;
+  }
 
-      switch (error.code) {
-        case "EACCES":
-          console.error(`${bind} requires elevated privileges`);
-          process.exit(1);
-        case "EADDRINUSE":
-          console.error(`${bind} is already in use`);
-          process.exit(1);
-        default:
-          throw error;
-      }
-    });
+  console.log(`🚀 Server is live at: ${baseUrl}`);
+});
+
   })
   .catch((err) => {
     console.error("🚨 Failed to connect to MongoDB:", err.message);
